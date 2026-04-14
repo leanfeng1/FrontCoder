@@ -1,0 +1,28 @@
+# FrontCoder Requirements
+#
+# Training
+torch==2.9.0
+transformers==4.57.3
+accelerate==1.12.0
+deepspeed==0.16.9
+verl==0.7.0.dev0
+
+# Data Processing
+pandas==2.3.3
+pyarrow==22.0.0
+numpy==2.2.0
+lxml==4.9.4
+pillow==11.0.0
+
+# API Clients
+openai==1.55.3
+aiohttp==3.13.2
+
+# Render Service
+fastapi==0.124.0
+uvicorn==0.32.0
+playwright==1.54.0
+
+# Utilities
+tqdm==4.67.1
+pyyaml==6.0.3

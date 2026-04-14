@@ -1,0 +1,117 @@
+# FrontCoder SFT Training Configuration
+#
+# This configuration is used for Supervised Fine-Tuning (SFT) stage
+# to align the model with front-end code generation instructions.
+#
+# Key parameters based on the paper:
+# - Learning rate: 5e-5 (paper: 5 x 10^-5)
+# - Global batch size: 128
+# - Epochs: 2
+# - Max sequence length: 16384 tokens
+
+data:
+  train_batch_size: 128
+  micro_batch_size_per_gpu: 2  # Adjust based on GPU memory
+
+  # Dataset paths - Replace with your data paths
+  train_files: path/to/train_sft_60k.parquet
+  val_files: path/to/val_sft.parquet
+
+  # Data format (single-turn)
+  prompt_key: question
+  response_key: response
+  prompt_dict_keys: null
+  response_dict_keys: null
+
+  # Multi-turn settings (disabled for SFT)
+  multiturn:
+    enable: false
+    messages_key: messages
+    tools_key: tools
+    enable_thinking_key: enable_thinking
+
+  # Sequence length control (paper: max 16K tokens)
+  max_length: 16384
+  truncation: error  # Raise error if sequence exceeds max_length
+
+  # Advanced settings
+  balance_dp_token: false
+  chat_template: null
+  use_shm: false
+  apply_chat_template_kwargs: {}
+
+model:
+  # Base model path - Replace with your model path
+  partial_pretrain: path/to/Qwen2.5-Coder-7B-Instruct
+  use_shm: false
+
+  # FSDP configuration for distributed training
+  fsdp_config:
+    model_dtype: bf16
+    wrap_policy:
+      min_num_params: 0
+    cpu_offload: false
+    offload_params: false
+
+  external_lib: null
+  enable_gradient_checkpointing: true  # Enable to save memory
+  trust_remote_code: false
+
+  # LoRA settings (set lora_rank > 0 to enable)
+  lora_rank: 0  # Full fine-tuning by default
+  lora_alpha: 16
+  target_modules: all-linear
+
+  use_liger: false
+  strategy: fsdp2
+
+# Optimizer configuration (paper: lr=5e-5, 2 epochs)
+optim:
+  lr: 5e-5  # Paper: 5 x 10^-5
+  betas: [0.9, 0.95]
+  weight_decay: 0.01
+  warmup_steps_ratio: 0.1
+  clip_grad: 1.0
+  lr_scheduler: cosine
+
+# Sequence parallelism
+ulysses_sequence_parallel_size: 1
+use_remove_padding: false
+
+# Trainer configuration
+trainer:
+  # Output directory for checkpoints
+  default_local_dir: ./checkpoints/${trainer.project_name}/${trainer.experiment_name}
+  default_hdfs_dir: null
+
+  project_name: frontcoder-sft
+  experiment_name: qwen25-7b-sft-60k
+
+  # Training duration (paper: 2 epochs)
+  total_epochs: 2
+  total_training_steps: null
+
+  # Logging
+  logger: ['console']  # Add 'wandb' for W&B logging
+
+  # Reproducibility
+  seed: 42
+
+  # Checkpoint saving
+  save_freq: -1  # Save at end of each epoch
+  test_freq: -1
+  max_ckpt_to_keep: 3
+
+  # Distributed settings
+  nnodes: 1
+  n_gpus_per_node: 8
+
+  # Resume settings
+  resume_mode: auto
+  resume_from_path: null
+
+  checkpoint:
+    save_contents: ["model", "optimizer", "extra", "hf_model"]
+    load_contents: ${trainer.checkpoint.save_contents}
+
+  device: cuda
