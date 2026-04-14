@@ -416,13 +416,11 @@ If you use this code or model, please cite our paper:
 
 ## 🙏 Acknowledgments
 
-- Thanks to the open-source community for the foundational tools
-- VLM and LLM service providers
-- Dataset contributors
+- Thanks to the open-source community for the foundational tools and models.
 
 ## 📜 License
 
-This project is released under the Apache 2.0 License. See [LICENSE](LICENSE) for details.
+This project is released under the MIT License.
 
 ---
 
